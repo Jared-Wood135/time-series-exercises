@@ -48,6 +48,7 @@ def prepare_store():
     store = acquire.acquire_store()
     store.sale_date = pd.to_datetime(store.sale_date)
     store = store.set_index(store.sale_date)
+    store = store.drop(columns='sale_date')
     store['month'] = store.index.month
     store['dayofweek'] = store.index.dayofweek
     store['sales_total'] = store.sale_amount * store.item_price
