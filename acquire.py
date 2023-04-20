@@ -7,6 +7,7 @@
 2. Imports
 3. acquire_swapi
 4. acquire_germany
+5. acquire_store
 '''
 
 # =======================================================================================================
@@ -29,13 +30,9 @@ This file generally acquires and merges data for Star Wars and Open Power System
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-from scipy import stats
-from sklearn.model_selection import train_test_split
 import os
-import env
 import requests
+import env
 
 # =======================================================================================================
 # Imports END
@@ -90,4 +87,48 @@ def acquire_germany():
 
 # =======================================================================================================
 # acquire_germany END
+# acquire_germany TO acquire_store
+# acquire_store START
+# =======================================================================================================
+
+def acquire_store():
+    '''
+    Creates and/or reads the 'store.csv' file from a SQL database.
+
+    INPUT:
+    NONE
+
+    OUTPUT:
+    store.csv = ONLY IF NON-EXISTANT
+    df = pandas dataframe
+    '''
+    if os.path.exists('store.csv'):
+        return pd.read_csv('store.csv', index_col=0)
+    else:
+        query = '''
+                SELECT
+                    item_id,
+                    item_brand,
+                    item_name,
+                    item_price,
+                    sale_id,
+                    sale_date,
+                    sale_amount,
+                    store_id,
+                    store_address,
+                    store_zipcode,
+                    store_city,
+                    store_state
+                FROM
+                    items
+                    LEFT JOIN sales USING(item_id)
+                    LEFT JOIN stores USING(store_id)
+                '''
+        url = env.get_db_url('tsa_item_demand')
+        df = pd.read_sql(query, url)
+        df.to_csv('store.csv')
+        return df
+
+# =======================================================================================================
+# acquire_store END
 # =======================================================================================================
