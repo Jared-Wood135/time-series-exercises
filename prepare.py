@@ -57,4 +57,33 @@ def prepare_store():
 
 # =======================================================================================================
 # prepare_store END
+# prepare_store TO prepare_germany
+# prepare_germany START
+# =======================================================================================================
+
+def prepare_germany():
+    '''
+    Acquires the vanilla 'germany' dataset then returns a prepared version for exploration...
+
+    INPUT:
+    NONE
+
+    OUTPUT:
+    germany.csv = ONLY IF IT IS NONEXISTANT
+    newgermany = pandas dataframe
+    '''
+    germany = acquire.acquire_germany()
+    germany.Date = pd.to_datetime(germany.Date)
+    germany = germany.set_index(germany.Date)
+    germany = germany.drop(columns='Date')
+    germany['year'] = germany.index.year
+    germany['month'] = germany.index.month
+    germany.Wind = germany.Wind.fillna(round(germany.Wind.mean(), 3))
+    germany.Solar = germany.Solar.fillna(round(germany.Solar.mean(), 3))
+    germany['Wind+Solar'] = germany['Wind+Solar'].fillna(round(germany['Wind+Solar'].mean(), 3))
+    newgermany = germany
+    return newgermany
+
+# =======================================================================================================
+# prepare_germany END
 # =======================================================================================================
