@@ -7,6 +7,7 @@
 2. Imports
 3. prepare_store
 4. prepare_germany
+5. prepare_saas
 '''
 
 # =======================================================================================================
@@ -29,6 +30,8 @@ import numpy as np
 import pandas as pd
 import acquire
 import os
+import io
+import requests
 
 # =======================================================================================================
 # Imports END
@@ -96,4 +99,37 @@ def prepare_germany():
 
 # =======================================================================================================
 # prepare_germany END
+# prepare_germany TO prepare_saas
+# prepare_saas START
+# =======================================================================================================
+
+def prepare_saas():
+    '''
+    Acquires the vanilla 'saas' dataset then returns a prepared version for exploration...
+
+    INPUT:
+    NONE
+
+    OUTPUT:
+    saas.csv = ONLY IF IT IS NONEXISTANT
+    newsaas = pandas dataframe
+    '''
+    if os.path.exists('saas.csv'):
+        df = pd.read_csv('saas.csv', index_col=0)
+        return df
+    else:
+        url = 'https://ds.codeup.com/saas.csv'
+        response = requests.get(url, verify=False)
+        data = response.content.decode('utf-8')
+        saas = pd.read_csv(io.StringIO(data))
+        saas.Month_Invoiced = pd.to_datetime(saas.Month_Invoiced)
+        saas.columns = saas.columns.str.lower()
+        saas = saas.set_index(saas.month_invoiced)
+        saas = saas.drop(columns=['month_invoiced', 'invoice_id'])
+        newsaas = saas
+        newsaas.to_csv('saas.csv')
+        return newsaas
+
+# =======================================================================================================
+# prepare_saas END
 # =======================================================================================================

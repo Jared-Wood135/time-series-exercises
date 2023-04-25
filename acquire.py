@@ -8,6 +8,7 @@
 3. acquire_swapi
 4. acquire_germany
 5. acquire_store
+6. acquire_saas
 '''
 
 # =======================================================================================================
@@ -33,6 +34,7 @@ import pandas as pd
 import os
 import requests
 import env
+import io
 
 # =======================================================================================================
 # Imports END
@@ -131,4 +133,32 @@ def acquire_store():
 
 # =======================================================================================================
 # acquire_store END
+# acquire_store TO acquire_saas
+# acquire_saas START
+# =======================================================================================================
+
+def acquire_saas():
+    '''
+    Creates and/or reads the 'saas.csv' file from a url.
+
+    INPUT:
+    NONE
+
+    OUTPUT:
+    saas.csv = ONLY IF NON-EXISTANT
+    df = pandas dataframe
+    '''
+    if os.path.exists('saas.csv'):
+        df = pd.read_csv('saas.csv', index_col=0)
+        return df
+    else:
+        url = 'https://ds.codeup.com/saas.csv'
+        response = requests.get(url, verify=False)
+        data = response.content.decode('utf-8')
+        df = pd.read_csv(io.StringIO(data))
+        df.to_csv('saas.csv')
+        return df
+    
+# =======================================================================================================
+# acquire_saas END
 # =======================================================================================================
